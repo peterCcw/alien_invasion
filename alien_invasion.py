@@ -33,6 +33,7 @@ class AlienInvasion:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
 
     def _check_events(self):
@@ -96,6 +97,19 @@ class AlienInvasion:
         alien.rect.y = alien.rect.height + 2 * alien.rect.height * row_number
         self.aliens.add(alien)
 
+    def _check_fleet_edges(self):
+        """Reacts when fleet reaches the edge of the screen"""
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        """Move whole fleet downward and change its direction of movement"""
+        for alien in self.aliens.sprites():
+            alien. rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1
+
     def _update_screen(self):
         """Update images on the screen"""
         self.screen.fill(self.settings.bg_color)
@@ -116,6 +130,11 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
+
+    def _update_aliens(self):
+        """Check if fleet reached the edge of the screen and update location of each alien"""
+        self._check_fleet_edges()
+        self.aliens.update()
 
 
 if __name__ == '__main__':

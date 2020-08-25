@@ -91,6 +91,7 @@ class AlienInvasion:
         """Check if game is not active, if it is not, begin a new game"""
         if not self.stats.game_active:
             # Resetting stats
+            self.settings.initialize_dynamic_settings()
             self.stats.reset_stats()
             self.stats.game_active = True
 
@@ -186,6 +187,7 @@ class AlienInvasion:
             # Deleting existing bullets and creating new fleet of aliens
             self.bullets.empty()
             self._create_fleet()
+            self.settings.increase_speed()
 
     def _update_aliens(self):
         """Check if fleet reached the edge of the screen and update location of each alien"""

@@ -9,10 +9,16 @@ class GameStats:
         self.game_active = False
 
         # Best score
-        self.high_score = 0
+        self._initialize_high_score()
 
     def reset_stats(self):
         """Reset statistic data"""
         self.ships_left = self.settings.ship_limit
         self.score = 0
         self.level = 1
+
+    def _initialize_high_score(self):
+        """Initialize high score by reading from the file"""
+        with open('best_score_txt', 'r') as file_object:
+            high_score = file_object.readline()
+            self.high_score = int(high_score.strip())

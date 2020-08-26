@@ -11,8 +11,10 @@ class Bullet(Sprite):
         self.settings = ai_game.settings
         self.color = self.settings.bullet_color
 
-        # Creating the bullet rectangle in the (0, 0) point and defining its proper location
-        self.rect = pygame.Rect(0, 0, self.settings.bullet_width, self.settings.bullet_height)
+        # Creating the bullet rectangle in the (0, 0) point and defining its
+        # proper location
+        self.rect = pygame.Rect(0, 0, self.settings.bullet_width,
+                                self.settings.bullet_height)
         self.rect.midtop = ai_game.ship.rect.midtop
 
         # Vertical location kept as float

@@ -18,6 +18,8 @@ class Settings:
         self.bullets_allowed = 3
 
         # Alien settings
+        self.bouncing_speed = 0.1
+        self.bouncing_height = 15
         self.fleet_drop_speed = 20
 
         # Speed of game change

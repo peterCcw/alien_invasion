@@ -18,8 +18,12 @@ class Alien(Sprite):
         self.rect.x = self.rect.width
         self.rect.y = self.rect.height
 
-        # Storaging direct horizontal location of the alien
+        # Storaging direct location of the alien
         self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
+
+        self.bouncing_direction = -1
+        self.current_bounce_distance = 0
 
     def check_edges(self):
         """Return True if alien reach is next to the edge of the screen"""
@@ -28,6 +32,24 @@ class Alien(Sprite):
             return True
 
     def update(self):
-        """Move alien left or right"""
+        """Move alien left or right and bounce up and down"""
+        # Horizontal movement
         self.x += self.settings.alien_speed * self.settings.fleet_direction
+        # Vertical movement
+        self._bouncing_movement()
+
         self.rect.x = self.x
+        self.rect.y = self.y
+
+    def _bouncing_movement(self):
+        """Change alien's y up and down"""
+        # Calculating new y, then increasing the distance. When alien reaches
+        # max bounce distance, current distance is being set to 0 and direction
+        # is being multiplied by -1
+        self.y += float(self.settings.bouncing_speed * self.bouncing_direction)
+        self.current_bounce_distance += 1
+        height = self.settings.bouncing_height / self.settings.bouncing_speed
+        if self.current_bounce_distance == height:
+            self.current_bounce_distance = 0
+            self.bouncing_direction *= -1
+

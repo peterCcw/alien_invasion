@@ -19,7 +19,7 @@ class Scoreboard:
         self.font = pygame.font.SysFont(None, 48)
 
         # Preparing images of the scoreboard
-        self._prep_images()
+        self.prep_images()
 
     def prep_score(self):
         """Convert score into image"""
@@ -67,7 +67,7 @@ class Scoreboard:
             ship.rect.y = 10
             self.ships.add(ship)
 
-    def _prep_images(self):
+    def prep_images(self):
         self.prep_score()
         self.prep_high_score()
         self.prep_level()

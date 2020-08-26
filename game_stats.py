@@ -19,6 +19,11 @@ class GameStats:
 
     def _initialize_high_score(self):
         """Initialize high score by reading from the file"""
-        with open('best_score_txt', 'r') as file_object:
+        try:
+            file_object = open('best_score_txt', 'r')
+        except FileNotFoundError:
+            self.high_score = 0
+        else:
             high_score = file_object.readline()
             self.high_score = int(high_score.strip())
+            file_object.close()

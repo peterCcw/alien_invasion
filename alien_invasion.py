@@ -10,6 +10,7 @@ from button import Button
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from alien_bullet import AlienBullet
 
 
 class AlienInvasion:
@@ -34,6 +35,7 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
+        self.alien_bullets = pygame.sprite.Group()
 
         self._create_fleet()
 
@@ -46,8 +48,10 @@ class AlienInvasion:
             self._check_events()
 
             if self.stats.game_active:
+                self._fire_alien_bullet()
                 self.ship.update()
                 self._update_bullets()
+                self._update_alien_bullets()
                 self._update_aliens()
 
             self._update_screen()
@@ -120,6 +124,12 @@ class AlienInvasion:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
+    def _fire_alien_bullet(self):
+        """Create new alien bullet and add it to the alien bullet's group"""
+        if len(self.alien_bullets) < self.settings.alien_bullets_allowed:
+            new_bullet = AlienBullet(self)
+            self.alien_bullets.add(new_bullet)
+
     def _create_fleet(self):
         """Create full fleet of aliens"""
         # Creating an alien and counting number of alien in a row.
@@ -170,6 +180,8 @@ class AlienInvasion:
         self.ship.blitme()
         for bullet in self.bullets:
             bullet.draw_bullet()
+        for alien_bullet in self.alien_bullets:
+            alien_bullet.draw_bullet()
         self.aliens.draw(self.screen)
 
         # Displaying score board
@@ -195,6 +207,20 @@ class AlienInvasion:
 
         self._check_bullet_alien_collisions()
 
+    def _update_alien_bullets(self):
+        """Update the location of alien bullets and delete bullets over the
+        lower edge of screen
+        """
+        # Updating the location
+        self.alien_bullets.update()
+
+        # Deleting bullets over the edge
+        for bullet in self.alien_bullets.copy():
+            if bullet.rect.bottom >= self.settings.screen_height:
+                self.alien_bullets.remove(bullet)
+
+        self._check_bullet_player_collisions()
+
     def _check_bullet_alien_collisions(self):
         """React to collision of bullet and alien"""
         # Checking if any bullet hit the alien. If so, delete bullet and alien
@@ -210,6 +236,11 @@ class AlienInvasion:
 
         if not self.aliens:
             self._start_new_level()
+
+    def _check_bullet_player_collisions(self):
+        """React to collision of alien bullet and player's ship"""
+        if pygame.sprite.spritecollideany(self.ship, self.alien_bullets):
+            self._ship_hit()
 
     def _update_aliens(self):
         """Check if fleet reached the edge of the screen and update location
@@ -242,6 +273,7 @@ class AlienInvasion:
 
             self.aliens.empty()
             self.bullets.empty()
+            self.alien_bullets.empty()
 
             self._create_fleet()
             self.ship.center_ship()
@@ -255,6 +287,7 @@ class AlienInvasion:
         """Load new level"""
         # Deleting existing bullets and creating new fleet of aliens
         self.bullets.empty()
+        self.alien_bullets.empty()
         self._create_fleet()
         self.settings.increase_speed()
 

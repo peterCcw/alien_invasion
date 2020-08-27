@@ -18,7 +18,6 @@ class Settings:
         self.bullets_allowed = 3
 
         # Alien settings
-        self.bouncing_speed = 0.1
         self.bouncing_height = 15
         self.fleet_drop_speed = 20
 
@@ -35,6 +34,7 @@ class Settings:
         self.ship_speed = 0.5
         self.bullet_speed = 0.7
         self.alien_speed = 0.5
+        self.alien_bouncing_speed = 0.1
         self.fleet_direction = 1
 
         # Scoring
@@ -45,5 +45,8 @@ class Settings:
         self.ship_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
         self.alien_speed *= self.speedup_scale
+        self.alien_bouncing_speed *= self.speedup_scale
+        if self.alien_bouncing_speed > self.bouncing_height:
+            self.alien_bouncing_speed = self.bouncing_height
 
         self.alien_points = int(self.alien_points * self.score_scale)

@@ -43,13 +43,18 @@ class Alien(Sprite):
 
     def _bouncing_movement(self):
         """Change alien's y up and down"""
-        # Calculating new y, then increasing the distance. When alien reaches
-        # max bounce distance, current distance is being set to 0 and direction
-        # is being multiplied by -1
-        self.y += float(self.settings.bouncing_speed * self.bouncing_direction)
-        self.current_bounce_distance += 1
-        height = self.settings.bouncing_height / self.settings.bouncing_speed
-        if self.current_bounce_distance == height:
+        # Calculating movement up or down
+        shift = float(self.settings.alien_bouncing_speed * self.bouncing_direction)
+
+        # Changing y and increasing bounce distance - current height of bounce
+        self.y += shift
+        self.current_bounce_distance += float(self.settings.alien_bouncing_speed)
+
+        # Rounding because of inaccuracy of float calculations
+        self.y = round(self.y, 2)
+        self.current_bounce_distance = round(self.current_bounce_distance, 2)
+
+        # Check if alien reached max height of bounce - switch direction
+        if self.current_bounce_distance >= self.settings.bouncing_height:
             self.current_bounce_distance = 0
             self.bouncing_direction *= -1
-

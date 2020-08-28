@@ -3,6 +3,7 @@ from time import sleep
 
 import pygame
 
+from cover import Cover
 from settings import Settings
 from game_stats import GameStats
 from scoreboard import Scoreboard
@@ -25,7 +26,7 @@ class AlienInvasion:
             (self.settings.screen_width, self.settings.screen_height))
         # self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         # self.settings.screen_width = self.screen.get_rect().width
-        # self.settings.screen_width = self.screen.get_rect().height
+        # self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Alien Invasion')
 
         # Creating objs of statistics and score board\
@@ -36,8 +37,10 @@ class AlienInvasion:
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
         self.alien_bullets = pygame.sprite.Group()
+        self.covers = pygame.sprite.Group()
 
         self._create_fleet()
+        self._create_covers()
 
         # Creating start button
         self.play_button = Button(self, "Gra")
@@ -108,11 +111,13 @@ class AlienInvasion:
             self.stats.game_active = True
             self.sb.prep_images()
 
-            # Deleting aliens and bullets
+            # Deleting aliens, bullets and covers
             self.aliens.empty()
             self.bullets.empty()
+            self.covers.empty()
 
-            # Creating new fleet and centering the ship
+            # Creating new fleet, cover and centering the ship
+            self._create_covers()
             self._create_fleet()
             self.ship.center_ship()
             # Hide mouse cursor
@@ -129,6 +134,15 @@ class AlienInvasion:
         if len(self.alien_bullets) < self.settings.alien_bullets_allowed:
             new_bullet = AlienBullet(self)
             self.alien_bullets.add(new_bullet)
+
+    def _create_covers(self):
+        """Create covers for player"""
+        cover = Cover(self)
+        cover_width = cover.rect.width
+        available_space_x = self.settings.screen_width - (2 * cover_width)
+        number_covers_x = available_space_x // (2 * cover_width)
+        for cover_number in range(number_covers_x):
+            self._create_cover(cover_number)
 
     def _create_fleet(self):
         """Create full fleet of aliens"""
@@ -160,6 +174,16 @@ class AlienInvasion:
         alien.rect.y = alien.y
         self.aliens.add(alien)
 
+    def _create_cover(self, cover_number):
+        """Create cover and add it to a group of covers"""
+        cover = Cover(self)
+        cover_width = cover.rect.width
+        cover.x = cover_width + 3 * cover_width * cover_number
+        cover.rect.x = cover.x
+        cover.bottom = self.settings.screen_height - self.ship.rect.height - 20
+        cover.rect.bottom = cover.bottom
+        self.covers.add(cover)
+
     def _check_fleet_edges(self):
         """React when fleet reaches the edge of the screen"""
         for alien in self.aliens.sprites():
@@ -177,6 +201,8 @@ class AlienInvasion:
     def _update_screen(self):
         """Update images on the screen"""
         self.screen.fill(self.settings.bg_color)
+        for cover in self.covers:
+            cover.blitme()
         self.ship.blitme()
         for bullet in self.bullets:
             bullet.draw_bullet()
@@ -206,6 +232,7 @@ class AlienInvasion:
                 self.bullets.remove(bullet)
 
         self._check_bullet_alien_collisions()
+        self._check_bullet_cover_collisions()
 
     def _update_alien_bullets(self):
         """Update the location of alien bullets and delete bullets over the
@@ -220,6 +247,7 @@ class AlienInvasion:
                 self.alien_bullets.remove(bullet)
 
         self._check_bullet_player_collisions()
+        self._check_bullet_cover_collisions()
 
     def _check_bullet_alien_collisions(self):
         """React to collision of bullet and alien"""
@@ -241,6 +269,21 @@ class AlienInvasion:
         """React to collision of alien bullet and player's ship"""
         if pygame.sprite.spritecollideany(self.ship, self.alien_bullets):
             self._ship_hit()
+
+    def _check_bullet_cover_collisions(self):
+        """React to collision of any bullet and cover"""
+        colls_player = pygame.sprite.groupcollide(self.bullets, self.covers,
+                                                  True, False)
+        if colls_player:
+            for cover in colls_player.values():
+                cover[0].damage_cover()
+
+        colls_alien = pygame.sprite.groupcollide(self.alien_bullets,
+                                                      self.covers, True, False)
+        if colls_alien:
+            for cover in colls_alien.values():
+                cover[0].damage_cover()
+            pass
 
     def _update_aliens(self):
         """Check if fleet reached the edge of the screen and update location
@@ -274,8 +317,10 @@ class AlienInvasion:
             self.aliens.empty()
             self.bullets.empty()
             self.alien_bullets.empty()
+            self.covers.empty()
 
             self._create_fleet()
+            self._create_covers()
             self.ship.center_ship()
 
             sleep(0.5)
@@ -285,10 +330,15 @@ class AlienInvasion:
 
     def _start_new_level(self):
         """Load new level"""
-        # Deleting existing bullets and creating new fleet of aliens
+        # Deleting existing bullets, covers and creating new fleet of aliens
+        # and new covers
         self.bullets.empty()
         self.alien_bullets.empty()
+        self.covers.empty()
+
         self._create_fleet()
+        self._create_covers()
+
         self.settings.increase_speed()
 
         # Incrementation of the level number

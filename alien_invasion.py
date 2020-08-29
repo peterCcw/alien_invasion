@@ -28,6 +28,8 @@ class AlienInvasion:
         # self.settings.screen_width = self.screen.get_rect().width
         # self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Alien Invasion')
+        icon = pygame.image.load('images/icon.bmp')
+        pygame.display.set_icon(icon)
 
         # Creating objs of statistics and score board\
         self.stats = GameStats(self)
@@ -45,7 +47,7 @@ class AlienInvasion:
         self._create_covers()
 
         # Creating start button
-        self.play_button = Button(self, "Gra")
+        self.play_button = Button(self, "Play")
 
     def run_game(self):
         """Begin of main loop of game"""
@@ -359,6 +361,8 @@ class AlienInvasion:
         # and new covers
         self.level_up_sound.play()
         sleep(1)
+
+        self.ship.center_ship()
 
         self.bullets.empty()
         self.alien_bullets.empty()

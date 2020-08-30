@@ -1,5 +1,4 @@
 # Alien Invasion
----
 Alien Invasion is my implementation of the game based on tutorial from "Python Crash Course, 2nd Edition". It contains
 some additional features which expand project from the book.
 ### Table of contents

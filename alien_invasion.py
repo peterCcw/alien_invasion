@@ -21,6 +21,7 @@ class AlienInvasion:
         """Initialize the game and create it's resources"""
         pygame.init()
         self.settings = Settings()
+        self.clock = pygame.time.Clock()
 
         self.screen = pygame.display.set_mode(
             (self.settings.screen_width, self.settings.screen_height))
@@ -52,6 +53,7 @@ class AlienInvasion:
     def run_game(self):
         """Begin of main loop of game"""
         while True:
+            self.clock.tick(480)
             self._check_events()
 
             if self.stats.game_active:

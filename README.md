@@ -70,4 +70,6 @@ edge of the screen.
 For every destroyed alien you get points. If you destroy all aliens, you start new level, the game becomes faster and 
 you get more point for each alien. If you want to reset best score, delete **best_score.txt** file.
 
+If you want to quit the game, you can press **Q** key.
+
 ![Interface](/readme_images/interface.png)
